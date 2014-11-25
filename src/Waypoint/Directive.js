@@ -1,18 +1,22 @@
-var zumWaypoint = function zumWaypoint(WaypointService) {
+var zumWaypoint = function zumWaypoint(WaypointService, $timeout) {
 	return {
-		controller : 'WaypointController',
-		scope : {
-			up : '@',
-			down : '@',
-			offset : '@',
-			waypoints : '=?zumWaypoint'
+		controller: 'WaypointController',
+		scope: {
+			up: '@',
+			down: '@',
+			offset: '@',
+			waypoints: '=?zumWaypoint',
+			timeout:'@'
 		},
-		link : function zumWaypointLink(scope, element, attrs, ctrl) {
+		link: function zumWaypointLink(scope, element, attrs, ctrl) {
 			var callback = $.proxy(ctrl.processWaypoint, ctrl);
-			element.waypoint({
-				handler : WaypointService.getHandlerSync(scope, callback),
-				offset : scope.offset || 0
-			});
+			
+			$timeout(function () {
+				element.waypoint({
+					handler: WaypointService.getHandlerSync(scope, callback),
+					offset: scope.offset || 0
+				});
+			}, scope.timeout || 0);
 		}
 	};
 };
