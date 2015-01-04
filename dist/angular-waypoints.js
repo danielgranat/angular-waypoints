@@ -10,10 +10,10 @@
 }(this, function (angular) {
     
     /**
-     * Zumba(r) Angular Waypoints v1.0.1 - 2014-10-13
+     * Zumba(r) Angular Waypoints v1.0.1 - 2015-01-04
      * An AngularJS module for working with jQuery Waypoints
      *
-     * Copyright (c) 2014 Zumba (r)
+     * Copyright (c) 2015 Zumba (r)
      * Licensed MIT
      */
     /**
@@ -118,27 +118,31 @@
     
     	setWaypoint(waypoints[namespace], data.waypoint);
     };
-    var zumWaypoint = function zumWaypoint(WaypointService) {
+    var zumWaypoint = function zumWaypoint(WaypointService, $timeout) {
     	return {
-    		controller : 'WaypointController',
-    		scope : {
-    			up : '@',
-    			down : '@',
-    			offset : '@',
-    			waypoints : '=?zumWaypoint'
+    		controller: 'WaypointController',
+    		scope: {
+    			up: '@',
+    			down: '@',
+    			offset: '@',
+    			waypoints: '=?zumWaypoint',
+    			timeout:'@'
     		},
-    		link : function zumWaypointLink(scope, element, attrs, ctrl) {
+    		link: function zumWaypointLink(scope, element, attrs, ctrl) {
     			var callback = $.proxy(ctrl.processWaypoint, ctrl);
-    			element.waypoint({
-    				handler : WaypointService.getHandlerSync(scope, callback),
-    				offset : scope.offset || 0
-    			});
+    			
+    			$timeout(function () {
+    				element.waypoint({
+    					handler: WaypointService.getHandlerSync(scope, callback),
+    					offset: scope.offset || 0
+    				});
+    			}, scope.timeout || 0);
     		}
     	};
     };
 
     return angular.module('zumba.angular-waypoints', [])
         .controller('WaypointController', ['$scope', WaypointController])
-        .directive('zumWaypoint', ['WaypointService', zumWaypoint])
+        .directive('zumWaypoint', ['WaypointService', '$timeout', zumWaypoint])
         .service('WaypointService', ['$timeout', WaypointService]);
 }));

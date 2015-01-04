@@ -25,6 +25,11 @@
 		 */
 		var getHandlerSyncSpy;
 
+		/**
+		* angular ngMock timeout service
+		*/
+		var $timeout;
+
 		beforeEach(module('zumWaypointTest', function($provide) {
 			$provide.decorator('WaypointService', function($delegate) {
 				$delegate.getHandlerSync = getHandlerSyncSpy = jasmine.createSpy('getHandlerSync');
@@ -32,9 +37,11 @@
 			});
 		}));
 
-		beforeEach(inject(function($compile, $rootScope) {
+		beforeEach(inject(function($compile, $rootScope,_$timeout_) {
+			$timeout = _$timeout_;
 			injectWaypoint = function(template) {
 				var scope = $rootScope.$new();
+
 
 				template = angular.element(template);
 				angular.element('body').append(template);
@@ -55,6 +62,7 @@
 			var waypoints;
 
 			injectWaypoint('<div zum-waypoint />');
+			$timeout.flush();
 			waypoints = $.waypoints();
 
 			expect(waypoints.vertical[0]).toBe($('[zum-waypoint]').get(0));
@@ -62,6 +70,8 @@
 
 		it('requests a handler function from the Waypoint service', function() {
 			var scope = injectWaypoint('<div zum-waypoint />');
+			$timeout.flush();
+			
 			expect(getHandlerSyncSpy).toHaveBeenCalledWith(scope, jasmine.any(Function));
 		});
 
